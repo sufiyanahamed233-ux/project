@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Hackathon Project</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: #0f172a;
+            color: white;
+            margin-top: 50px;
+        }
+        
+        input {
+            padding: 10px;
+            width: 250px;
+            border-radius: 5px;
+            border: none;
+        }
+        
+        button {
+            padding: 10px 15px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #38bdf8;
+            cursor: pointer;
+        }
+        
+        ul {
+            margin-top: 20px;
+            list-style: none;
+        }
+        
+        li {
+            background: #1e293b;
+            margin: 5px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🚀 My Hackathon App</h1>
+
+    <input type="text" id="inputBox" placeholder="Enter something..." />
+    <button onclick="addItem()">Add</button>
+
+    <ul id="list"></ul>
+
+    <script>
+        function addItem() {
+            const value = document.getElementById("inputBox").value;
+
+            if (value === "") return;
+
+            const li = document.createElement("li");
+            li.innerText = value;
+
+            document.getElementById("list").appendChild(li);
+
+            document.getElementById("inputBox").value = "";
+        }
+    </script>
+
+</body>
+
+</html>
