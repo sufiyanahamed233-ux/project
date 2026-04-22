@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
 
 <head>
@@ -7,6 +8,7 @@
 
 <body>
 
+    ```
     <h1>🚀 Request App</h1>
 
     <input type="text" id="inputBox" placeholder="Enter request..." />
@@ -17,12 +19,10 @@
     <!-- Supabase CDN -->
     <script src="https://unpkg.com/@supabase/supabase-js@1"></script>
 
-    <script src="https://unpkg.com/@supabase/supabase-js@1"></script>
-
     <script>
         const supabaseClient = supabase.createClient(
             "https://skmwduzxisvopvpfypgt.supabase.co",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrbXdkdXp4aXN2b3B2cGZ5cGd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NjcyOTksImV4cCI6MjA5MjM0MzI5OX0.kgMPzcGlIvW-32gsDnUm3VifS4mTtTEQGmqVj82CmPE"
+            "YOUR_ANON_KEY"
         );
 
         async function addItem() {
@@ -43,8 +43,8 @@
                 return;
             }
 
-            // 2️⃣ Send to n8n
-            await fetch("https://sufiyan23.app.n8n.cloud/webhook-test/new-request", {
+            // 2️⃣ Send to n8n AND GET RESPONSE ✅
+            const res = await fetch("https://sufiyan23.app.n8n.cloud/webhook-test/new-request", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -54,11 +54,23 @@
                 })
             });
 
-            // 3️⃣ Clear input
-            document.getElementById("inputBox").value = "";
+            const data = await res.json();
+            console.log("AI Response:", data);
 
-            // 4️⃣ Reload list
-            loadData();
+            // 3️⃣ SHOW AI RESPONSE IN UI ✅
+            const list = document.getElementById("list");
+
+            const userLi = document.createElement("li");
+            userLi.innerText = "🧑 " + value;
+
+            const aiLi = document.createElement("li");
+            aiLi.innerText = "🤖 " + data.response;
+
+            list.prepend(aiLi);
+            list.prepend(userLi);
+
+            // 4️⃣ Clear input
+            document.getElementById("inputBox").value = "";
         }
 
         async function loadData() {
@@ -76,13 +88,14 @@
 
             data.forEach(item => {
                 const li = document.createElement("li");
-                li.innerText = item.text;
+                li.innerText = "🧑 " + item.text;
                 list.appendChild(li);
             });
         }
 
         loadData();
     </script>
+    ```
 
 </body>
 
