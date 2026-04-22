@@ -17,16 +17,19 @@
     <!-- Supabase CDN -->
     <script src="https://unpkg.com/@supabase/supabase-js@1"></script>
 
+    <script src="https://unpkg.com/@supabase/supabase-js@1"></script>
+
     <script>
         const supabaseClient = supabase.createClient(
             "https://skmwduzxisvopvpfypgt.supabase.co",
-            "YOUR_ANON_KEY"
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrbXdkdXp4aXN2b3B2cGZ5cGd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NjcyOTksImV4cCI6MjA5MjM0MzI5OX0.kgMPzcGlIvW-32gsDnUm3VifS4mTtTEQGmqVj82CmPE"
         );
 
         async function addItem() {
             const value = document.getElementById("inputBox").value;
-            if (!value) return;
+            if (!value.trim()) return;
 
+            // 1️⃣ Save to Supabase
             const {
                 error
             } = await supabaseClient
@@ -36,29 +39,37 @@
                 }]);
 
             if (error) {
-                alert("Insert failed: " + error.message);
+                alert("Error: " + error.message);
                 return;
             }
 
+            // 2️⃣ Send to n8n
+            await fetch("https://sufiyan23.app.n8n.cloud/webhook/new-request", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    text: value
+                })
+            });
+
+            // 3️⃣ Clear input
             document.getElementById("inputBox").value = "";
+
+            // 4️⃣ Reload list
             loadData();
         }
 
         async function loadData() {
             const {
-                data,
-                error
+                data
             } = await supabaseClient
                 .from("requests")
                 .select("*")
                 .order("id", {
                     ascending: false
                 });
-
-            if (error) {
-                console.error(error);
-                return;
-            }
 
             const list = document.getElementById("list");
             list.innerHTML = "";
