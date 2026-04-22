@@ -2,68 +2,75 @@
 <html>
 
 <head>
-    <title>My Hackathon Project</title>
-    <style>
-        body {
-            font-family: Arial;
-            text-align: center;
-            background: #0f172a;
-            color: white;
-            margin-top: 50px;
-        }
-        
-        input {
-            padding: 10px;
-            width: 250px;
-            border-radius: 5px;
-            border: none;
-        }
-        
-        button {
-            padding: 10px 15px;
-            margin-left: 10px;
-            border: none;
-            border-radius: 5px;
-            background: #38bdf8;
-            cursor: pointer;
-        }
-        
-        ul {
-            margin-top: 20px;
-            list-style: none;
-        }
-        
-        li {
-            background: #1e293b;
-            margin: 5px;
-            padding: 10px;
-            border-radius: 5px;
-        }
-    </style>
+    <title>Hackathon App</title>
 </head>
 
 <body>
 
-    <h1>🚀 My Hackathon App</h1>
+    <h1>🚀 Request App</h1>
 
-    <input type="text" id="inputBox" placeholder="Enter something..." />
-    <button onclick="addItem()">Add</button>
+    <input type="text" id="inputBox" placeholder="Enter request..." />
+    <button onclick="addItem()">Submit</button>
 
     <ul id="list"></ul>
 
+    <!-- Supabase CDN -->
+    <script src="https://unpkg.com/@supabase/supabase-js@1"></script>
+
     <script>
-        function addItem() {
+        const supabaseClient = supabase.createClient(
+            "https://skmwduzxisvopvpfypgt.supabase.co",
+            "YOUR_ANON_KEY"
+        );
+
+        async function addItem() {
             const value = document.getElementById("inputBox").value;
+            if (!value) return;
 
-            if (value === "") return;
+            const {
+                error
+            } = await supabaseClient
+                .from("requests")
+                .insert([{
+                    text: value
+                }]);
 
-            const li = document.createElement("li");
-            li.innerText = value;
-
-            document.getElementById("list").appendChild(li);
+            if (error) {
+                alert("Insert failed: " + error.message);
+                return;
+            }
 
             document.getElementById("inputBox").value = "";
+            loadData();
         }
+
+        async function loadData() {
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("requests")
+                .select("*")
+                .order("id", {
+                    ascending: false
+                });
+
+            if (error) {
+                console.error(error);
+                return;
+            }
+
+            const list = document.getElementById("list");
+            list.innerHTML = "";
+
+            data.forEach(item => {
+                const li = document.createElement("li");
+                li.innerText = item.text;
+                list.appendChild(li);
+            });
+        }
+
+        loadData();
     </script>
 
 </body>
